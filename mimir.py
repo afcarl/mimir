@@ -9,6 +9,7 @@ NUM_ASSETS = 1000
 DELTA_THRESHOLD = 0.01
 ERROR_THRESHOLD = 0.1
 
+# Read data from files
 with open('data/full_data_assets.txt') as f0, open('data/returns.csv') as f1, open('data/value.csv') as f2:
     full_data_assets = f0.read().split()
     returns = [line.split(',') for line in f1.read().split('\n')[:NUM_ASSETS]]
@@ -18,6 +19,7 @@ with open('data/full_data_assets.txt') as f0, open('data/returns.csv') as f1, op
     style_betas = [list(map(float, y[1:])) for y in style_betas if y[0] in full_data_assets]
 
     assert len(returns) == len(style_betas), "Num returns does not match num style betas"
+    # FIXME: add this back once we have data for last 4-week return
     # assert len(returns[0]) == len(style_betas[0]), "Time period mismatch between returns and betas"
 
 
