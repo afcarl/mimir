@@ -60,7 +60,7 @@ delta = THRESHOLD
 # Continue running this exercise until the change in gearing ratios falls below a certain threshold
 while delta >= THRESHOLD:
 
-    style_returns = [get_style_return(day, returns, style_betas, gearing_ratios) for day in range(NUM_T_PERIODS)]
+    style_returns = [get_style_return(t, returns, style_betas, gearing_ratios) for t in range(NUM_T_PERIODS)]
 
     new_gearing_ratios = [get_gearing_ratio(style_betas[i], returns[i], style_returns) for i in range(len(returns))]
 
