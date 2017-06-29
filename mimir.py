@@ -19,8 +19,7 @@ with open('data/full_data_assets.txt') as f0, open('data/returns.csv') as f1, op
     style_betas = [list(map(float, y[1:])) for y in style_betas if y[0] in full_data_assets]
 
     assert len(returns) == len(style_betas), "Num returns does not match num style betas"
-    # FIXME: add this back once we have data for last 4-week return
-    # assert len(returns[0]) == len(style_betas[0]), "Time period mismatch between returns and betas"
+    assert len(returns[0]) == len(style_betas[0]), "Time period mismatch between returns and betas"
 
 
 # Function to calculate the return to style over a given (t_index) 4-week period
