@@ -12,13 +12,21 @@ ERROR_THRESHOLD = 0.1
 # Read data from files
 with open('data/full_data_assets.txt') as f0, open('data/returns.csv') as f1, open('data/value.csv') as f2:
     full_data_assets = f0.read().split()
-    returns = [line.split(',') for line in f1.read().split('\n')]
-    returns = [list(map(float, x[1:])) for x in returns if x[0] in full_data_assets]
+    unfiltered_returns = [line.split(',') for line in f1.read().split('\n')]
+
+    # Filter for data for which we have a complete set for
+    filtered_data = [x for x in unfiltered_returns if x[0] in full_data_assets]
+
+    # The first column is the asset ids, so strip them off an just get returns
+    returns = [list(map(float, x[1:])) for x in filtered_data]
+
+    asset_ids = list(zip(*filtered_data))[0]
 
     style_betas = [line.split(',') for line in f2.read().split('\n')]
     style_betas = [list(map(float, y[1:])) for y in style_betas if y[0] in full_data_assets]
 
     assert len(returns) == len(style_betas), "Num returns does not match num style betas"
+    assert len(returns) == len(asset_ids), "Num returns does not match num asset ids"
     assert len(returns[0]) == len(style_betas[0]), "Time period mismatch between returns and betas"
 
 
@@ -64,7 +72,7 @@ def get_gearing_ratio(asset_style_betas, asset_returns, style_returns):
 
 
 # Initialize gearing ratios to 1
-gearing_ratios = [1] * len(returns)
+gearing_ratios = [1] * len(asset_ids)
 delta = DELTA_THRESHOLD
 
 # Continue running this exercise until the change in gearing ratios falls below a certain threshold
