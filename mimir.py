@@ -66,10 +66,16 @@ def get_gearing_ratio(asset_style_betas, asset_returns, style_returns):
     coefficient = results.params[1]
     standard_error = results.bse[1]
 
-    # If error term for the coefficient is above a certain threshold, then we set the coefficient
-    # to zero, which hopefully excludes it from the style portfolio in next iteration
-    if standard_error > ERROR_THRESHOLD:
-        coefficient = 0
+    if standard_error == 0 and coefficient == 0:
+        return 0
+
+    t_statistic = coefficient / standard_error
+
+    # If t_statistic for the coefficient is below a certain threshold, meaning we are not sufficiently
+    # confident about the estimation of that coefficient, then we set it to zero, which hopefully
+    # excludes it from the style portfolio in next iteration
+    if t_statistic < ERROR_THRESHOLD:
+        return 0
 
     # The estimated coefficient is the gearing ratio
     return coefficient
