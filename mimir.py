@@ -84,18 +84,17 @@ def get_gearing_ratio(asset_style_betas, asset_returns, style_returns):
 # Initialize gearing ratios to 1
 gearing_ratios = [1] * len(asset_ids)
 delta = DELTA_THRESHOLD
+old_style_returns = None
 
 # Continue running this exercise until the change in gearing ratios falls below a certain threshold
 while delta >= DELTA_THRESHOLD:
 
-    style_returns = [get_style_return(t, returns, style_betas, gearing_ratios) for t in range(NUM_T_PERIODS)]
+    new_style_returns = [get_style_return(t, returns, style_betas, gearing_ratios) for t in range(NUM_T_PERIODS)]
 
-    new_gearing_ratios = [get_gearing_ratio(style_betas[i], returns[i], style_returns) for i in range(len(returns))]
-
-    # Compute sum of squared differences between old gearing ratios and new ones
-    delta = sum(np.subtract(new_gearing_ratios, gearing_ratios) ** 2)
+    # Compute sum of squared differences between old style returns and new ones
+    delta = sum(np.subtract(new_style_returns, old_style_returns) ** 2) if old_style_returns != None else DELTA_THRESHOLD
     print("Delta ", delta)
 
-    # Update gearing ratios for next iteration
-    gearing_ratios = new_gearing_ratios
+    gearing_ratios = [get_gearing_ratio(style_betas[i], returns[i], new_style_returns) for i in range(len(returns))]
 
+    old_style_returns = new_style_returns
