@@ -32,6 +32,8 @@ with open('data/full_data_assets.txt') as f0, open('data/returns.csv') as f1, op
 
 # Function to calculate the return to style over a given (t_index) 4-week period
 def get_style_return(t_index, all_asset_returns, all_asset_style_betas, gearing_ratios):
+    # We are using the return from the t+1 time period, with the beta from the t time period
+    # to calculate a factor return for the t+1 time period
     next_period_returns = list(zip(*all_asset_returns))[t_index + 1]
 
     # We rank returns in descending order based on their (gearing ratio * style beta) value
@@ -56,8 +58,10 @@ def get_gearing_ratio(asset_style_betas, asset_returns, style_returns):
     # Add a constant term since data is not necessarily centered. Do we need this?
     x = sm.add_constant(x)
 
-    # The dependent variable Y is the return to the asset
-    results = sm.OLS(asset_returns[:NUM_T_PERIODS], x).fit()
+    # The dependent variable Y is the return to the asset.
+    # We are using the asset return from the t+1 time period. Factor return is also
+    # from t+1 time period, but the array starts there anyway so no need for +1 in style_returns
+    results = sm.OLS(asset_returns[1:NUM_T_PERIODS + 1], x).fit()
 
     coefficient = results.params[1]
     standard_error = results.bse[1]
